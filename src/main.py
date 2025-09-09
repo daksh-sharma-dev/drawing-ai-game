@@ -43,11 +43,17 @@ class Options(tk.Frame):
         self.save_button = tk.Button(self, text='Save', command=lambda:self.save_image())
         self.save_button.pack(side='left')
 
+        self.clear_button = tk.Button(self, text='Clear', command=lambda:self.clear_canvas())
+        self.clear_button.pack(side='left')
+
     def save_image(self):
         ps_file = 'temp_canvas.ps'
         self.canvas.postscript(file=ps_file, colormode='color')
         with Image.open(ps_file) as img: img.save('drawing.png', 'png')
         os.remove(ps_file)
+
+    def clear_canvas(self):
+        self.canvas.delete('all')
 
 
 root = Root()
