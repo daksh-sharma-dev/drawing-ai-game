@@ -1,6 +1,9 @@
 import tkinter as tk
 from PIL import Image
 import os
+import time
+from data_prep import convert_images
+import joblib
 
 class Root(tk.Tk):
     def __init__(self):
@@ -12,7 +15,7 @@ class Root(tk.Tk):
         self.canvas = Canvas(self, background='white')
         self.options = Options(self, self.canvas)
 
-        self.options.pack(side='top', fill='x')
+        self.options.pack(side='top', fill='both')
         self.canvas.pack(fill='both')
     
 
@@ -40,21 +43,35 @@ class Options(tk.Frame):
         self.master = master
         self.canvas = canvas
 
-        self.save_button = tk.Button(self, text='Save', command=lambda:self.save_image())
+        self.save_button = tk.Button(self, text='Save', command=lambda:self.save_image(('saved', 'drawing.png')))
         self.save_button.pack(side='left')
 
         self.clear_button = tk.Button(self, text='Clear', command=lambda:self.clear_canvas())
         self.clear_button.pack(side='left')
 
-    def save_image(self):
+        self.predict_button = tk.Button(self, text='Predict', command=lambda:self.predict_image())
+        self.predict_button.pack(side='left')
+
+        self.label = tk.Label(self, text='')
+        self.label.pack(side='bottom')
+
+    def save_image(self, destination):
         ps_file = 'temp_canvas.ps'
         self.canvas.postscript(file=ps_file, colormode='color')
-        with Image.open(ps_file) as img: img.save('drawing.png', 'png')
+        # filepath = os.path.join('data', 'triangle', f'triangle_{int(time.time())}.png')
+        filepath = os.path.join('data', destination[0], destination[1])
+        with Image.open(ps_file) as img: img.save(filepath, 'png')
         os.remove(ps_file)
 
     def clear_canvas(self):
         self.canvas.delete('all')
 
+    def predict_image(self):
+        self.save_image(('temporary', 'temp.png'))
+        X, y = convert_images((28,28), ['temporary'])
+        model = joblib.load(os.path.join('models', 'knn_model.pkl'))
+        y = model.predict(X)
+        self.label.configure(text=y)
 
 root = Root()
 root.mainloop()
