@@ -9,6 +9,7 @@ Built with **Python, Tkinter, scikit-learn, Pillow, and NumPy**.
 - Ability to draw onto a Tkinter canvas.
 - Save your drawings as a png file.
 - Predict shapes using a saved machine learning model.
+- Over 90% Accuracy.
 
 --- 
 
